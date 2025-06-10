@@ -13,6 +13,7 @@ import {
   SidebarRail
 } from "@/components/ui/sidebar"
 import { NavUser } from "./nav-user"
+import { createClient } from "@/lib/supabase/server";
 
 // This is sample data.
 const data = {
@@ -24,7 +25,7 @@ const data = {
       items: [
         {
           title: "Overview",
-          url: "#",
+          url: "/dashboard",
           isActive: true,
         },
       ],
@@ -35,7 +36,7 @@ const data = {
       items: [
         {
           title: "Seserahan",
-          url: "#",
+          url: "/seserahan",
           isActive: false,
         },
         {
@@ -55,11 +56,13 @@ const data = {
   ],
 }
 
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+export async function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const supabase = await createClient();
+  const { data: dataUser } = await supabase.auth.getUser();
   return (
     <Sidebar {...props}>
       <SidebarHeader>
-        <NavUser user={{ name: "John Doe", email: "john.doe@example.com", avatar: "https://placehold.co/64x64" }} />
+        <NavUser user={{ name: "John Doe", email: dataUser?.user?.email || "", avatar: "https://placehold.co/64x64" }} />
       </SidebarHeader>
       <SidebarContent>
         {/* We create a SidebarGroup for each parent. */}
